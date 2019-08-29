@@ -73,7 +73,7 @@ if(length(params$input_datatable) ==1){
 
 # summary_file_function <- tidy_function(data_fun)
 
-data_fun <- data_fun[data_fun$Protein_ID == 1,]
+# data_fun <- data_fun[data_fun$Protein_ID == 1,]
 
 
 ```
