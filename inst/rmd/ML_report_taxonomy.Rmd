@@ -108,7 +108,7 @@ tidy_MQ_taxonomy <- function(df_taxonomy.txt){
 # input
 if(length(params$input_datatable) ==1){
   # test with local test with local files in the same dir,
-  df_taxonomy.txt  <- read_excel("MetaLab_taxonomy.xlsx", sheet = 2)
+  df_taxonomy.txt  <- read.delim("MetaLab_taxonomy.txt", header = TRUE, sep = "\t")
 
 }else{
   # opencpu render from data table by parametrized input
