@@ -1,6 +1,9 @@
 ---
 title: "debug"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,53 +13,173 @@ library(canvasXpress)
 
 
 
-```{r echo=FALSE,fig.width= 12,fig.height=6}
+```{r eval==FALSE,fig.width= 12,fig.height=6}
 
-  y=read.table("http://www.canvasxpress.org/data/cX-heatmapR-dat.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
-  x=read.table("http://www.canvasxpress.org/data/cX-heatmapR-smp.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
-  z=read.table("http://www.canvasxpress.org/data/cX-heatmapR-var.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+  # y=read.table("http://www.canvasxpress.org/data/cX-heatmapR-dat.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+  # x=read.table("http://www.canvasxpress.org/data/cX-heatmapR-smp.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+  # z=read.table("http://www.canvasxpress.org/data/cX-heatmapR-var.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+  # 
+  # 
+  # canvasXpress(
+  #   graphType="Heatmap",
+  #   data=y,
+  #   smpAnnot=x,
+  #   varAnnot=z,
+  #   
+  #   
+  #   colorSpectrumZeroValue = 0,
+  #   colorSpectrum=list("magenta", "blue", "black","red", "gold"),
+  #   
+  #   
+  #   # for color bar
+  #   heatmapIndicatorWidth = 100, # for the color bar
+  #   heatmapIndicatorHeight = 30,
+  #   heatmapIndicatorHistogram = TRUE,
+  #   
+  #   heatmapIndicatorPosition ="topLeft",
+  #   colorSpectrum=list("blue", "yellow", "red"),
+  #   #colorSpectrumBreaks =list(8, 9,10),
+  #   
+  #   # for overlay sample grouping
+  #   smpOverlays =list("Treatment","Site","Dose"),
+  #   smpOverlayProperties=list(Dose=list(position="right", thickness=50, type="Bar"), Site=list(position="left"), Treatment=list(position="right")),
+  #   
+  #   # name the color for the grouping
+  #   colorKey=list(Sens=list("white", "green"), Site="Pastel1", Treatment="Accent", Type="YlGn"),
+  #   
+  #   # sample grouping separation, se
+  #   heatmapSmpSeparateBy = "Treatment",
+  #   
+  #   # for overlay of varabile grouping
+  #   
+  #   # higlight variable
+  #    highlightVar=list("Probe18","Probe19","Probe20"),
+  # 
+  #   
+  #   heatmapCellBoxColor="rgb(255,255,255)",
+  #   samplesClustered=TRUE,
+  #   showTransition=TRUE,
+  #   title="Clustered data",
+  #   variablesClustered=TRUE,
+  #   width = 800, 
+  #   height = 600
+  # )
+  # 
+  # 
+  # 
+  # canvasXpress(
+  #   data=y,
+  #   smpAnnot=x,
+  #   varAnnot=z,
+  #   
+  #   colorKey=list(Sens=list("white", "green"), Site="Pastel1", Treatment="Accent", Type="YlGn"),
+  #   colorSpectrum=list("magenta", "blue", "black", "red", "gold"),
+  #   colorSpectrumZeroValue=0,
+  #   
+  #   graphType="Heatmap",
+  #   title="Advanced Overlays in Heatmaps",
+  #   
+  #   
+  #   heatmapIndicatorHeight=50,
+  #   heatmapIndicatorHistogram=TRUE,
+  #   heatmapIndicatorPosition="topLeft",
+  #   heatmapIndicatorWidth=60,
+  #   
+  #   samplesClustered=TRUE,
+  #   variablesClustered=TRUE,
+  #   showTransition=FALSE,
+  #   
+  #   
+  #   smpOverlayProperties=list(Dose=list(position="right", thickness=50, type="Bar"), Site=list(position="left"), Treatment=list(position="right")),
+  #   
+  #   smpOverlays=list("Treatment", "Site", "Dose"),
+  #   
+  #   varOverlays=list("Type", "Sens"),
+  #   varOverlayProperties=list(Sens=list(color="red", position="bottom", thickness=20, type="Bar"), Type=list(position="top")),
+  #   
+  # )
+
   
   
-  canvasXpress(
-    data=y,
-    smpAnnot=x,
-    varAnnot=z,
-    colorSpectrum=list("blue", "white", "red"),
-    graphType="Heatmap",
-    heatmapCellBoxColor="rgb(255,255,255)",
-    samplesClustered=TRUE,
-    showTransition=TRUE,
-    title="Clustered data",
-    variablesClustered=TRUE,
-    width = 800, 
-    height = 600
-  )
+  
+####
+  
+# y=read.table("http://www.canvasxpress.org/data/cX-overlays-dat.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+#   x=read.table("http://www.canvasxpress.org/data/cX-overlays-smp.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+#   z=read.table("http://www.canvasxpress.org/data/cX-overlays-var.txt", header=TRUE, sep="\t", quote="", row.names=1, fill=TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+#  
+#   
+#   canvasXpress(
+#     data=y,
+#     smpAnnot=x,
+#     varAnnot=z,
+#     graphType="Heatmap",
+#     showTransition=FALSE,
+#     smpLabelScaleFontFactor=1.1,
+#     smpOverlayProperties=list(Binary=list(position="left", scheme="BlackAndWhite", type="Default"), Boolean=list(position="left"), Continuous=list(position="left", spectrum=list("green", "white"), type="Heatmap"), Discrete=list(position="left", thickness=30, type="Default"), Early=list(color="blue", position="right", thickness=50, type="Line"), Late=list(color="red", position="right", thickness=50, type="Line"), OnTime=list(color="green", position="right", thickness=50, type="Line"), PhaseA=list(position="left", thickness=50, type="Bar"), PhaseB=list(position="left", thickness=50, type="Bar"), PhaseC=list(position="left", thickness=50, type="Bar"), Temp=list(position="right", spectrum=list("blue", "white", "red"), thickness=100, type="Heatmap")),
+#     smpOverlays=list("PhaseA", "PhaseB", "PhaseC", "-", "-", "Binary", "Boolean", "Continuous", "Discrete", "-", "-", "Temp", "-", "-", "Early", "OnTime", "Late"),
+#     varLabelRotate=45,
+#     varLabelScaleFontFactor=1.7,
+#     varOverlayProperties=list(Cold=list(color="blue", position="bottom", thickness=50, type="StackedPercent"), Conc=list(position="top", thickness=40, type="Bar"), Desc=list(position="bottom", type="Text"), Drug=list(position="top", thickness=30, type="Increase"), Even=list(position="bottom", thickness=50, type="Bar"), Female=list(position="top", thickness=50, type="Pie"), Hot=list(color="red", position="bottom", thickness=50, type="StackedPercent"), Male=list(position="top", thickness=50, type="Pie"), Nice=list(color="green", position="bottom", thickness=50, type="Dotplot"), Odd=list(position="bottom", thickness=50, type="BarLine"), Site=list(position="top", type="Default"), Ugly=list(color="black", position="bottom", thickness=50, type="Dotplot")),
+#     varOverlays=list("Drug", "-", "Male", "Female", "-", "Site", "-", "Conc", "-", "Desc", "-", "Even", "Odd", "-", "-", "Nice", "Ugly", "-", "-", "Cold", "Hot")
+#   )
+  
+  
 
-
-
+z <- seq(-10, 10, 0.1)
+x <- cos(z)
+y <- sin(z)
+threejs::scatterplot3js(x, y, z, color=rainbow(length(z)))
+  
 ```
 
 
 
 ```{r echo=FALSE,fig.width= 8,fig.height=6}
-# if(1==1){
-#   p1<-plotly::plot_ly(mtcars, x = ~mpg, y = ~cyl, type =  "scatter")
+
+  # DT::datatable(mtcars) 
+
+```
+
+
+
+```{r}
 # 
-#   p2<-plotly::plot_ly(mtcars, x = ~mpg, y = ~disp, type =  "scatter")
-#   
-#    plotly::subplot(p1, p2)
-#   
-# }
+#  advanced_scatterplot(data_frame = mtcars,
+#                      x_index = 1,# column index/location
+#                      y_index = 3,# column index/location
 # 
-# if(TRUE){
-#   p1<-plotly::plot_ly(mtcars, x = ~mpg, y = ~cyl, type =  "scatter")
+#                      point_shape_index = NULL, # column index/location
+#                      point_shape_manual = c(15, 16, 17, 18),
 # 
-#   p2<-plotly::plot_ly(mtcars, x = ~mpg, y = ~disp, type =  "scatter")
-#   
-#    htmltools::tagList(list(p1, p2))
-# }
+#                      point_color_index = NULL, # column index/location
+#                      point_color_manual = rainbow(10), # if point_color_index is null, only use the first color, otherwise
+#                      point_color_type = "group", # c("graidnet", "group"), if group, will force to factor
+# 
+#                      point_size_index = NULL,
+#                      point_size_manual = 4, # will be overide by point_size_index
+#                      point_alpha = 0.5,
+# 
+#                      overlay_polygon = FALSE,
+#                      polygon_type =  "convex", # or "ellipse"
+#                      polygon_index = NULL, # draw polygon overlap, will choose
+#                      polygon_alpha = 0.5,
+#                      ellipse_confidience = 0.95, # only works when ellipse is choose for polygon_type
+#                      polygon_fill_color_manual = rainbow(10), # null means auto color, otherwise provide list of color values
+# 
+#                      label_text_index = 8, # to do this section
+#                      label_color_index = 8,
+#                      label_color_manual = rainbow(10)[2:3],
+#                      label_size_index =  NULL,
+#                      label_size_manual  = 4,
+# 
+#                      equal_xy = FALSE
+# 
+#                     )
 
 
 
 ```
+
+
 

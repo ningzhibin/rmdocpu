@@ -2,19 +2,33 @@
 title: "Peptide identification Quick summary"
 author: Suggestions to imetalabca@gmail.com
 date: Report generated @`r Sys.time()`
+always_allow_html: TRUE
 output:
   html_document:
     fig_width: 10
     fig_caption: TRUE
-    toc: true
+    toc: TRUE
     toc_depth: 4
     toc_float:
       collapsed: TRUE
       smooth_scroll: TRUE
-    number_sections: true
+    number_sections: TRUE
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    highlight: tango
+    df_print: kable
+    number_sections: TRUE
+  word_document:
+    toc: true
+    toc_depth: 4
+    highlight: tango
+    df_print: kable
+    smart: TRUE
 params:  
   input_datatable: !r NULL ### Manditory; main data input for the report
   meta_table: !r NULL ### Optional; If provided, will do some statistics
+  if_html: TRUE # if you want to pdf or word export, set this as FALSE
 ---
 
 <style type="text/css">
@@ -58,6 +72,19 @@ library(plotly)
 
 # todo meta check
 ```
+
+
+
+```{r debug and test,  eval= FALSE}
+
+
+peptide.txt  <- read.delim("peptides.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+
+
+#meta_table <- read.delim("metadata.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # test with meta file
+
+```
+
 
 
 
@@ -114,28 +141,14 @@ tidy_peptides <- function(peptide.txt){
 
 
 # input
-if(is.null(params$input_datatable)){
-  # test with local test with local files in the same dir,
-  peptide.txt  <- read.delim("peptides.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
 
-}else{
-  # opencpu render from data table by parametrized input
-  peptide.txt <- params$input_datatable
-}
+peptide.txt <- params$input_datatable
 
 
 # Note: The folling analysis with meta info assumes that
 # 1st columns as sample name, 2nd column as experiment name, 3rd column and after as grouping
 
 meta_table <- params$meta_table 
-# if there is any null value in the meta colum, set the meta as NULL
-if(any(is.na(meta_table$meta1))){
-  meta_table <- NULL
-}
-
-
-#meta_table <- read.delim("metadata.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # test with meta file
-
 
 ```
 
@@ -151,6 +164,28 @@ sparsity <- rowSums(df_intensity > 0) # here sparsity is number of present value
 index_all_na_rows <- which(sparsity == 0)
 df_intensity <- df_intensity[-index_all_na_rows,,drop = FALSE]
 peptide_sequence <- peptide_tidyed$peptide_sequence[-index_all_na_rows]
+
+
+# check meta_table
+
+if( is.null(meta_table)){ 
+  
+  meta_info <- "* **No meta information provided**"
+  
+}else if (any(is.na(meta_table))){ 
+  
+  meta_info <-  "* **The meta information provided has missing values, please check again**"
+  
+}else if(!(all(as.vector(data.frame$rawfile) %in% meta_table[,1]) && all( meta_table[,1] %in% as.vector(data.frame$rawfile)))){
+  meta_info <-  "* **The raw files in meta information provided do not match the raw file names in the summary.txt, please check again**"
+
+}else{
+ meta_info <-   c("* **Groups: **",unique(meta_table[,3]))  
+}
+
+
+
+
 
 ```
 

@@ -1,0 +1,432 @@
+---
+title: "ProteinGroups Identification Quick summary"
+author: Suggestions to imetalabca@gmail.com
+date: Report generated @`r Sys.time()`
+always_allow_html: true
+output:
+  html_document:
+    fig_width: 10
+    fig_caption: TRUE
+    toc: true
+    toc_depth: 4
+    toc_float:
+      collapsed: TRUE
+      smooth_scroll: TRUE
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    highlight: tango
+    number_sections: true
+params:  
+  input_datatable: !r NULL ### Manditory; main data input for the report
+  meta_table: !r NULL ### Optional; If provided, will do some statistics
+  
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, echo=FALSE}
+htmltools::img(src = "https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/iMetaReport.png", 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0; padding:10px;width:150px;height:150px;')
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+source("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/subfunctions_general.r")
+source("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/subfunctions_general_update.r")
+
+# enviroment setup
+knitr::opts_chunk$set(echo = FALSE,warning = FALSE, message = FALSE, cache = FALSE)
+
+library(tidyverse)
+library(ggplot2)
+library(d3heatmap)
+library(plotly)
+#library(gplots)
+#library(corrplot)
+#library(DT) # for interactive data table display 
+
+# local usage test and debug
+# rmarkdown::render("MQ_report_proteinGroups.Rmd", params = list(input_datatable =  your_readin_tbl))
+# or with meta information
+# rmarkdown::render("MQ_report_proteinGroups.Rmd", params = list(input_datatable =  your_readin_tbl, meta = your_meta_table))
+
+
+```
+
+
+
+```{r function_needed, recho=FALSE}
+
+tidy_proteingroups <- function(proteinGroups){ 
+
+  # extract the primary protein ID,
+  protein.ids_split <- strsplit(as.vector(proteinGroups$"Protein IDs"), ";| ") # this is a list of list of split names ; for maxquant result, space( ) for Kai's open-search result
+  protein_primary_ids <- unlist(lapply(protein.ids_split, function(x) x[1])) # only keep the first one
+  #rownames(proteinGroups) <- protein_primary_ids # rename the rownames of the matrix
+  
+  # do the row wise filtering
+   index_contaminant <- grep("\\+",proteinGroups[,grep( "ontaminant", colnames(proteinGroups))]) # note that + is a special character
+  index_reverse <- grep("\\+", proteinGroups$Reverse)
+  index_to_remove <- c(index_contaminant,index_reverse)
+  
+  if(length(index_to_remove) >0){
+    proteinGroups <- proteinGroups[-index_to_remove,] # filtered table
+    protein_primary_ids <- protein_primary_ids[-index_to_remove] # filtered ids
+  }
+  
+
+  n_contaminant <- length(index_contaminant)
+  n_reversed <- length(index_reverse)
+
+  
+  # extra the intensity column matrix
+  if(any(grepl("LFQ intensity ", colnames(proteinGroups)))){ # if there are LFQ intensity columns, take out the LFQ columns
+    intensity_columns <- proteinGroups[,grep("LFQ intensity ", colnames(proteinGroups))]
+    colnames(intensity_columns)<-gsub("LFQ intensity ", "", colnames(intensity_columns))
+  }else{ # otherwise take out intensity column， even only one column
+    intensity_columns <-   proteinGroups[,grep("Intensity ", colnames(proteinGroups)),drop =  FALSE]
+    colnames(intensity_columns)<-gsub("Intensity ", "", colnames(intensity_columns))
+  }
+  
+  return(list("intensity_matrix" = intensity_columns,
+              "n_contaminant" = n_contaminant,
+              "n_reversed" = n_reversed,
+              "n_unique_peptides" = proteinGroups$"Unique peptides",
+              "score" = proteinGroups$Score,
+              "protein_primary_ids" =protein_primary_ids
+              
+              ))
+  
+}
+
+
+```
+
+
+
+```{r collect_input, echo=FALSE,fig.width= 15,fig.height=10}
+
+
+# input
+if(is.null(params$input_datatable)){
+  # test with local test with local files in the same dir,
+  proteinGroups.txt <- read.delim("final_proteins.tsv", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+
+}else{
+  # opencpu render from data table by parametrized input
+  proteinGroups.txt <- params$input_datatable
+}
+
+# Note: The folling analysis with meta info assumes that
+# 1st columns as sample name, 2nd column as experiment name, 3rd column and after as grouping
+
+meta_table <- params$meta_table 
+# if there is any null value in the meta colum, set the meta as NULL
+if(any(is.na(meta_table$meta1))){
+  meta_table <- NULL
+}
+
+
+#meta_table <- read.delim("metadata.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # test with meta file
+
+```
+
+
+```{r file_tidy, echo=FALSE,fig.width= 15,fig.height=10}
+
+# tidy
+proteingroups_tidyed <- tidy_proteingroups(proteinGroups.txt)
+rm(proteinGroups.txt)
+
+# process
+df_intensity <- proteingroups_tidyed$intensity_matrix
+
+
+sparsity <- rowSums(df_intensity > 0) # here sparsity is number of present values
+
+index_all_na_rows <- which(sparsity == 0)
+
+df_intensity <- df_intensity[-index_all_na_rows,,drop = FALSE]
+
+protein_primary_ids <- proteingroups_tidyed$protein_primary_ids[-index_all_na_rows]
+
+
+```
+
+# Intro
+
+**This report provides some basic description of the proteingroups identificaiton from maxquant database search. **
+**The report is based on the proteinGroups.txt, without defined experimental design/grouping information**
+**Users can use this to quickly check the overal quality of the experiment**
+
+
+# Take home figures
+
+
+
+*  **Number of contaminant: ** `r proteingroups_tidyed$n_contaminant`
+
+*  **Number of reversed: ** `r proteingroups_tidyed$n_reversed`
+
+*  **Number of qualified proteingroups: ** `r nrow(proteingroups_tidyed$intensity_matrix)`
+
+*  **Number of quailfied proteingroups without intensity information:  ** `r length(index_all_na_rows)`
+
+*  **Number of experiment:  ** `r ncol(df_intensity)`
+
+*  **All experiments:  ** `r colnames(df_intensity)`
+
+`r if( !is.null(meta_table)){ c("* **Meta/grouping info provided: **",unique(meta_table[,3]))}else{ "* **No meta information provided**"} `
+
+
+
+# Unique peptide number
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+peptide_summary <- as.data.frame(table(proteingroups_tidyed$n_unique_peptides))
+colnames(peptide_summary) = c("Unique_Peptides", "Freq")
+
+
+p<- ggplot2::ggplot(data = peptide_summary)+
+  geom_col(aes(x = Unique_Peptides,y = Freq))+
+  theme_bw()
+plotly::ggplotly(p)
+
+
+
+
+```
+
+
+# Protein Score distribution
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+df_score <- data.frame(Score  = proteingroups_tidyed$score)
+
+rm(proteingroups_tidyed)
+
+p<- ggplot2::ggplot(data=df_score, aes(Score)) +
+  geom_histogram(aes(y=..density..),color= "black",fill="white")+
+  geom_density(alpha=.2, fill="#FF6666")+
+  theme_bw()
+
+plotly::ggplotly(p)
+
+```
+
+
+# Intensity distribution
+
+Columns starting with "LFQ_intensity_" will be selected if exist (meaning LFQ option was checked for label free quantification, which is deliberately processed by Maxquant already), otherwise Intensity_ columns will be used instead for protein experession.
+
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+df_sparsity <- as.data.frame(table(sparsity))
+
+
+p<- ggplot2::ggplot(data = df_sparsity)+
+  geom_col(aes(x = sparsity,y = Freq))+
+  xlab("Presence in the Protein Intensity Matrix")+
+  theme_bw()
+plotly::ggplotly(p)
+
+
+
+```
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+#note: in this log10 intenisty matrix, 0 is converted into infinity, therefore will not show in the box plot, and does not affect the distribution
+df_intensity_log10 <-log10(df_intensity)
+
+data_matrix_log10_melt<-reshape2::melt(as.matrix(df_intensity_log10))
+
+colnames(data_matrix_log10_melt) <- c("Proteins", "Samples", "Log10(Inensity)")
+
+p<-ggplot(data_matrix_log10_melt)+
+    geom_boxplot(aes(x = Samples, y = `Log10(Inensity)`)) +
+    theme_bw()+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  
+
+plotly::ggplotly(p)
+
+rm(p)
+rm(data_matrix_log10_melt)
+
+
+```
+
+
+`r if(ncol(df_intensity) > 1){ "# Overall Expression Profile"} `
+
+`r if(ncol(df_intensity) > 1){ "## Heatmap"} `
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+# only if there is experiment desgin and  number of columns in protein experssion value is more than 1, 
+if(ncol(df_intensity) > 1){ 
+  df_intensity_log10 <-log10(df_intensity+1)
+  rownames(df_intensity_log10) <- protein_primary_ids
+  
+  d3heatmap::d3heatmap(df_intensity_log10,show_grid = FALSE, color = "OrRd")
+}
+
+
+```
+
+
+`r if(ncol(df_intensity) > 3 && nrow(df_intensity) > 5 ){ "## PCA Analysis"}`
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+if(ncol(df_intensity) > 3){ # otherwise, no point to do PCA
+
+  df_intensity_log10 <- log10(df_intensity+1)
+ 
+  if(is.null(meta_table)){
+    
+    #pca <-PCA_wrapper_prcomp2(data_matrix = as.matrix(df_intensity_log10), inputation = TRUE)
+    PCA_result <- prcomp(t(df_intensity_log10))
+    loading <- as.data.frame(PCA_result$x)
+    #plot(loading$PC1, loading$PC2)
+    #plot_ly(data = loading, x = ~PC1, y = ~PC2) %>% add_markers() %>% add_text(text = row.names(loading))
+
+    p1 <- plot_ly(loading, x = ~PC1, y = ~PC2, z = ~PC3) %>%
+    add_markers() %>%
+    add_text(text = row.names(loading))
+    
+    
+    
+    # for screen plot
+    sd <- PCA_result$sde
+    var <- sd^2
+    var.percent <- var/sum(var) * 100
+  
+    PCs <- paste("PC", 1:length(var.percent))
+    df_scree <- data.frame(PC  = factor(PCs, levels = PCs), ratio =var.percent)
+  
+  
+    p2 <- plot_ly(data = df_scree,x = ~PC, y = ~ratio, type = "bar") %>%
+      layout(title = "Scree Plot of Principle components", xaxis = list(title = 'Principle Component'), yaxis = list(title = 'Variance(%)'))
+  
+    htmltools::tagList(list(p1, p2))
+
+    
+    
+  }else{
+
+    # do pca analysis with meta groupign information
+    
+    pca <-PCA_wrapper_prcomp2(data_matrix = as.matrix(df_intensity_log10), data_meta =  meta_table[,c(2,3)], inputation = TRUE)
+
+    
+    # plotting
+    print(pca$pca_scree_plot)
+  
+      cat("Scree plot ##  shows the performance of the PCA analysis, the more percentage the top procomponets accounts, the better separation")
+ 
+    print(pca$pca_component_plot)
+    
+      cat("2d PCA Component plot ##")
+    
+    print(pca$pca_confidence)
+    
+      cat("2d PCA Component plot ## with confidence boundaries")
+
+    print(pca$pca_component_plot_kmeans)
+    
+      cat("2d PCA Component plot with K-means grouping, which is non-supervised grouping ")
+    
+    pca$pca_component_plot_3d_interactive
+    
+  }
+
+}
+
+
+```
+
+
+
+`r if(length(unique(meta_table[,3])) >=2 && all(table(meta_table[,3]) >=2)) {"# ANOVA TEST  \n**Proteins with significiant(p < 0.05) change between any groups**"}`
+
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+# will do this block while: 1, more than (includeing) two meta/groups, 2, each group has more than (includeing) 2 samples.
+if(length(unique(meta_table[,3])) >=2 && all(table(meta_table[,3]) >=2)){
+
+pvalues_anova <- matrix_PostHoc(df_intensity,meta_table[,3])
+
+df_intensity_p <- cbind(pvalues_anova, df_intensity)
+
+rownames(df_intensity_p) <- protein_primary_ids
+
+df_intensity_p_filtered <- df_intensity_p[which(!is.na(df_intensity_p$p_PostHoc_pairs)),] 
+
+DT::datatable(df_intensity_p_filtered, extensions = 'Buttons',options = list(dom = "Blfrtip",scrollX=TRUE, buttons = list('copy', 'print', list(
+        extend = 'collection',
+        buttons = c('csv', 'excel', 'pdf'),
+        text = 'Download'
+      ))))
+
+}
+
+
+
+
+
+```
+
+
+
+# Download the neat table
+
+**The table is clean proteingroups expression table, with reversed and contaminant removed. Only the first protein id was used to represent the proteingroups.**
+**The values are the LFQ(label free quantification turned on) or raw protein intensity. **
+**The talbe can be further visualized by our shiny apps [shiny.imetalab.ca](shiny.imetalab.ca)**
+
+
+```{r echo=FALSE,fig.width= 8,fig.height=6}
+
+
+df_intensity <- as.data.frame(df_intensity)
+rownames(df_intensity) <- protein_primary_ids
+
+
+DT::datatable(df_intensity, extensions = 'Buttons',options = list(dom = "Blfrtip",scrollX=TRUE, buttons =       list('copy', 'print', list(
+        extend = 'collection',
+        buttons = c('csv', 'excel', 'pdf'),
+        text = 'Download'
+      ))))
+
+
+
+
+```
+
+
+
+

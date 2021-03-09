@@ -2,6 +2,7 @@
 title: "Function Annoation Quick View"
 author: Suggestions to imetalabca@gmail.com
 date: Report generated @`r Sys.time()`
+always_allow_html: true
 output:
   html_document:
     fig_width: 10
@@ -11,6 +12,11 @@ output:
     toc_float:
       collapsed: TRUE
       smooth_scroll: TRUE
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 4
+    highlight: tango
     number_sections: true
 params:  
   input_datatable: !r NULL ### Manditory; main data input for the report

@@ -136,7 +136,7 @@ render_MQsummary <- function(data_table){
 
 
 
-render_MQsummary_file <- function(file,meta = NULL){
+render_MQsummary_file <- function(file, meta = NULL, output_format = "html_document"){
 
   data_table <- read.delim(file, header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
 
@@ -145,10 +145,10 @@ render_MQsummary_file <- function(file,meta = NULL){
 
   if(!is.null(meta)){
     meta_table <- read.delim(meta, header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # with meta file
-    rmarkdown::render("input.Rmd",output_format = "html_document", params = list(summary_file_tbl =  data_table, meta_table = meta_table), output_file="output.html")
+    rmarkdown::render("input.Rmd",output_format = output_format, params = list(summary_file_tbl =  data_table, meta_table = meta_table), output_file="output.html")
 
   }else{
-    rmarkdown::render("input.Rmd",output_format = "html_document", params = list(summary_file_tbl =  data_table), output_file="output.html")
+    rmarkdown::render("input.Rmd",output_format = output_format, params = list(summary_file_tbl =  data_table), output_file="output.html")
   }
 
   invisible()

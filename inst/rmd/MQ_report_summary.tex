@@ -1,0 +1,200 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={MetaLab MS identification Quick Summary},
+  pdfauthor={Suggestions to imetalabca@gmail.com},
+  pdfborder={0 0 0},
+  breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{MetaLab MS identification Quick Summary}
+\author{Suggestions to
+\href{mailto:imetalabca@gmail.com}{\nolinkurl{imetalabca@gmail.com}}}
+\date{Report generated @2021-03-05 00:17:20}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\hypertarget{intro}{%
+\section{Intro}\label{intro}}
+
+\textbf{This report provides some overall description of the database
+search. } \textbf{Users can use this to quickly check the overal quality
+of the experiment}
+
+\hypertarget{take-home-figures}{%
+\section{Take-home figures}\label{take-home-figures}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Peptide Sequences Identified in total: }
+
+  \begin{longtable}[]{@{}rl@{}}
+  \toprule
+  Pep & tide Sequences Identified\tabularnewline
+  \midrule
+  \endhead
+  values & 31477\tabularnewline
+  \bottomrule
+  \end{longtable}
+\end{itemize}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Avearge ms/ms identification rate(\%): }
+
+  \begin{longtable}[]{@{}rl@{}}
+  \toprule
+  MS/ & MS Identified {[}\%{]}\tabularnewline
+  \midrule
+  \endhead
+  values & 32.73\tabularnewline
+  \bottomrule
+  \end{longtable}
+\end{itemize}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{No meta information provided}
+\end{itemize}
+
+\hypertarget{msms-id-rate}{%
+\section{MSMS id rate}\label{msms-id-rate}}
+
+Why you should pay attention to MSMS Id rate?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  MS ID rate is a good repretation of the MS run quality. Raw files from
+  Q-Exactive series should have roughly around 50\% ms ID rate
+  (Percentage of MSMS spectra identified as peptided, at a 1\% FDR) for
+  humane cell culture digest, and at least 20\% for metaproteomics
+  samples according to experience.
+\item
+  MS ID rate should also be well-reproduced across samples and
+  groupings.
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Check the raw files if they have obnormally low ID rate, usually with
+  abnormal LC/basepeak profile or low MS intensity.
+\item
+  A decreasing MS ID treand along sample running order indicates a
+  performance drop of the MS: your MS might need to be cleaned. If the
+  performance drops a lot, more than 20\% within running time for the
+  whole project, without scramble of the sample run-order, the data
+  might not be usable, unless very careflly caliburated.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-ad316157be37b4a670ca}{}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-6e37fb6c4f29746392e2}{}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-795767f34d5ddfe65de6}{}
+
+\hypertarget{peptide-sequence}{%
+\section{Peptide Sequence}\label{peptide-sequence}}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-f9c43329702a9093c11d}{}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-f56c52042aa6e0d6bae2}{}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{htmlwidget-58f215df7abd6ef735dd}{}
+
+\hypertarget{overall-performance}{%
+\section{Overall Performance}\label{overall-performance}}
+
+\textbf{check the overall performance for all raw files:}
+
+\hypertarget{htmlwidget-7497ab2ac5bf31a5b35b}{}
+
+\end{document}
