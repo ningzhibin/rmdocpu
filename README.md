@@ -34,8 +34,12 @@ install.packages("RCurl")
 install.packages("devtools")
 
 install.packages(“ggplot2”)
+
 install.packages(“rmarkdown”)
+
 install.packages(“pheatmap”)
+
 devtools::install_github("talgalili/d3heatmap")
+
 devtools::install_github("ningzhibin/rmdocpu")
 
