@@ -140,7 +140,7 @@ render_MQsummary_file <- function(file, meta = NULL, output_format = "html_docum
 
   data_table <- read.delim(file, header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
 
-  myfile <- RCurl::getURL("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/MQ_report_summary.Rmd")
+  myfile <- RCurl::getURL("https://gitlab.com/iMetaLab/rmdocpu/-/raw/master/MQ_report_summary.Rmd")
   writeLines(myfile, con="input.Rmd");
 
   if(!is.null(meta)){
@@ -180,7 +180,7 @@ render_peptides_file <- function(file, meta = NULL){
 
   data_table  <- read.delim(file, header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) # NOTE the read in options
 
-  myfile <- RCurl::getURL("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/MQ_report_peptides.Rmd")
+  myfile <- RCurl::getURL("https://gitlab.com/iMetaLab/rmdocpu/-/raw/master/MQ_report_peptides.Rmd")
   writeLines(myfile, con="input.Rmd");
 
   if(!is.null(meta)){
@@ -223,7 +223,7 @@ render_proteinGroups_file <- function(file, meta = NULL){
   #data_table  <- readr::read_tsv(file, col_names = TRUE)
   data_table  <- read.delim(file, header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) # NOTE the read in options
 
-  myfile <- RCurl::getURL("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/MQ_report_proteinGroups.Rmd")
+  myfile <- RCurl::getURL("https://gitlab.com/iMetaLab/rmdocpu/-/raw/master/MQ_report_proteinGroups.Rmd")
   writeLines(myfile, con="input.Rmd");
 
   if(!is.null(meta)){
@@ -267,7 +267,7 @@ render_taxon_file <- function(file,meta = NULL){
   data_table  <-  read.delim(file, header = TRUE,check.names = FALSE,sep = ",", stringsAsFactors = FALSE) # readin from xl file
 
 
-  myfile <- RCurl::getURL("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/ML_report_taxonomy.Rmd")
+  myfile <- RCurl::getURL("https://gitlab.com/iMetaLab/rmdocpu/-/raw/master/ML_report_taxonomy.Rmd")
   writeLines(myfile, con="input.Rmd");
 
   if(!is.null(meta)){
@@ -313,7 +313,7 @@ render_function_file <- function(file, meta = NULL){
   #data_table  <- readxl::read_excel(file, sheet = 2) # readin from xl file
   data_table <- read.csv(file, header = TRUE, sep = ",")
 
-  myfile <- RCurl::getURL("https://raw.githubusercontent.com/ningzhibin/rmdocpu/master/inst/rmd/ML_report_function.Rmd")
+  myfile <- RCurl::getURL("https://gitlab.com/iMetaLab/rmdocpu/-/raw/master/ML_report_function.Rmd")
   writeLines(myfile, con="input.Rmd");
 
   if(!is.null(meta)){
