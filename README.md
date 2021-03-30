@@ -27,9 +27,7 @@ install.packages("RCurl")
 ## Other R pacakges
 
 
-
-
-## Then install R oackages from either CRAN or Github (requries devtools)
+* Then install R oackages from either CRAN or Github (requries devtools)
 
 install.packages("devtools")
 
