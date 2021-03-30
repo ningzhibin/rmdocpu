@@ -1,16 +1,17 @@
-# Opencpu server package for metalab result report
+# Opencpu server package for metalab result report/metereport
 
 
-## install opencpu first
+## Install opencpu first
 
 Requires Ubuntu 20.04 (Focal) or 18.04 (Bionic)
 
-`sudo add-apt-repository -y ppa:opencpu/opencpu-2.2`
+On a fresh system, like AWS EC2.
 
-`sudo apt-get update `
-
-`sudo apt-get upgrade`
-
+```
+sudo add-apt-repository -y ppa:opencpu/opencpu-2.2
+sudo apt-get update 
+sudo apt-get upgrade
+```
 Installs OpenCPU server
 
 `sudo apt-get install -y opencpu-server`
@@ -19,67 +20,36 @@ Done! Open http://yourhost/ocpu in your browser
 
 
 
-## RCurl package, 
-in order to instal that, you need to install curl on Linux system first
+## System level preparation
+
+In order to instal RCurl pacakge in R, you need to install curl on Linux system first
 
 `sudo apt -y install libcurl4-openssl-dev`
 
-then in R as root (sudo R)
+In order to do rmarkdown by opencpu, an pandoc on system level needs to be installed.
 
-`install.packages("RCurl")`
+`sudo apt-get install -y pandoc pandoc-citeproc`
 
-## Other R pacakges
+Then start R as root 
 
-
-* Then install R oackages from either CRAN or Github (requries devtools)
-
-`install.packages("devtools")`
-
-`install.packages(“ggplot2”)`
-
-`install.packages(“rmarkdown”)`
-
-`install.packages(“pheatmap”)`
-
-`devtools::install_github("talgalili/d3heatmap")`
+`sudo R`
 
 
-`install.packages("dbplyr")`
+## Install requuired R pacakges
 
-`install.packages("Data.table")`
+ Then install R oackages from either CRAN or Github (requries devtools)
 
-`install.packages("dbplyr")`
+```
+install.packages(c("RCurl","devtools","ggplot2"，"rmarkdown","pheatmap","dbplyr"，"Data.table","dbplyr"，"dplyr","DT"，"ggforce","ggfortify"，"ggrepel","gplots","Hmisc","plotly","reshape2"，"rrcov","rrcovNA","rrcovNA","shinyjs","shinyWidgets","vegan","scatterplot3d"))
 
-`install.packages("dplyr")`
+devtools::install_github("talgalili/d3heatmap")
 
-`install.packages("DT")`
+```
 
-`install.packages("ggforce")`
-
-`install.packages("ggfortify")`
-
-`install.packages("ggrepel")`
-
-`install.packages("gplots")`
-
-`install.packages("Hmisc")`
-
-`install.packages("plotly")`
-
-`install.packages("reshape2")`
-
-`install.packages("rrcov")`
-
-`install.packages("rrcovNA")`
-
-`install.packages("shinyjs")`
-
-`install.packages("shinyWidgets")`
-
-
-## Then install 
+## Then install this package rmdocpu
 
 `devtools::install_github("ningzhibin/rmdocpu")`
+
 
 
 
