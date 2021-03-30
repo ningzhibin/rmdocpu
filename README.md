@@ -45,37 +45,37 @@ then in R as root (sudo R)
 
 `devtools::install_github("ningzhibin/rmdocpu")`
 
-`install.packages("dbplyr")
+`install.packages("dbplyr")`
 
-install.packages("Data.table")
+`install.packages("Data.table")`
 
-install.packages("dbplyr")
+`install.packages("dbplyr")`
 
-install.packages("dplyr")
+`install.packages("dplyr")`
 
-install.packages("DT")
+`install.packages("DT")`
 
-install.packages("ggforce")
+`install.packages("ggforce")`
 
-install.packages("ggfortify")
+`install.packages("ggfortify")`
 
-install.packages("ggrepel")
+`install.packages("ggrepel")`
 
-install.packages("gplots")
+`install.packages("gplots")`
 
-install.packages("Hmisc")
+`install.packages("Hmisc")`
 
-install.packages("plotly")
+`install.packages("plotly")`
 
-install.packages("reshape2")
+`install.packages("reshape2")`
 
-install.packages("rrcov")
+`install.packages("rrcov")`
 
-install.packages("rrcovNA")
+`install.packages("rrcovNA")`
 
-install.packages("shinyjs")
+`install.packages("shinyjs")`
 
-install.packages("shinyWidgets")`
+`install.packages("shinyWidgets")`
 
 
 
