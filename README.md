@@ -43,7 +43,6 @@ then in R as root (sudo R)
 
 `devtools::install_github("talgalili/d3heatmap")`
 
-`devtools::install_github("ningzhibin/rmdocpu")`
 
 `install.packages("dbplyr")`
 
@@ -77,6 +76,10 @@ then in R as root (sudo R)
 
 `install.packages("shinyWidgets")`
 
+
+## Then install 
+
+`devtools::install_github("ningzhibin/rmdocpu")`
 
 
 
