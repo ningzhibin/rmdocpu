@@ -15,22 +15,6 @@ LazyData: true
 RoxygenNote: 7.1.1.9001
 Depends: R (>= 3.6.0)
 Imports:
-  utils,
-  RCurl, 
-  httr,
-  rmarkdown,
-  ggplot2,
-  plotly,
-  shiny,
-  tidyverse,
-  DT,
-  rmetalab,
-  rio,
-  factoextra, 
-  pheatmap,
-  DESeq2,
-  GSVA,
-  limma,
-  kableExtra
+  util
   
   
