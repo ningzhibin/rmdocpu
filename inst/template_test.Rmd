@@ -1,0 +1,553 @@
+---
+title: "Test the rmarkdown template locally or remotely"
+#output: html_notebook
+---
+
+# Readme
+
+*  The following scripts show how to use r to upload a metalab result txt file to the opencpu server as the input, options with a meta file,  to render an html report then download the report to local storage
+*  This function could be done by any script language, such as java, perl or bash
+*  By doing this, Metalab can have the report easily, without the need to setup the r environment, but easily get all the report, especially with  Various data visualization in the report
+*  These report are all html based and could be linked/iframed into a another frame file
+
+* This doc shows the detailed method about how to test and debug the templates locally and remotely if this package is installed on remote server
+* Current server is on compute Canada. The server is configured with a open cpu web server and open to the world.
+
+
+* About how to make opencpu request is detailed here: https://www.opencpu.org/api.html
+
+
+
+## Required Pacakges 
+
+```{r}
+#library(jsonlite)
+#library(httr)
+
+```
+
+
+## preparation
+
+* prepare the 5 result files from metalab from the same data set, and meta information table for this experiment, with the name of metainfo.txt.
+
+see table format requirement for more information:
+https://github.com/northomics/Metalab_development_wiki/wiki
+
+
+* prepare the 5 markdown files for local test
+* test locally first then remotely
+* open the correstpoding rmarkdown file to debug
+
+* setup the working directory as this file
+
+
+# summary.txt
+
+
+## local test
+
+### without meta
+
+```{r}
+data_table <- rio::import("./extdata/summary.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+# knit to all supported format (here we support pdf and html)
+rmarkdown::render("./rmd/MQ_report_summary.Rmd",output_format = "html_document", params = list(data_table =  data_table), output_dir = getwd())
+
+
+
+
+```
+
+
+
+### with meta
+
+```{r}
+data_table <- rio::import("./extdata/summary.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+meta_table <- rio::import("./extdata/metainfo.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) 
+
+rmarkdown::render("./rmd/MQ_report_summary.Rmd",output_format = "html_document", params = list(data_table =  data_table, meta_table = meta_table),  output_dir = getwd())
+
+```
+
+
+
+## remote test
+
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_MQsummary_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+
+```
+
+### without meta
+
+```{r}
+
+
+# upload file and do the rendering
+# in this case, the summary.txt is in the working dir. it can be anywhere with the path
+# meta file is optional
+
+r <- httr::POST(url_api, body = list(file = httr::upload_file("summary.txt")))
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("summary.txt"), meta = httr::upload_file("summary_metainfo.txt")))
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_ID_summary.html")
+
+
+
+```
+
+### with meta
+
+```{r}
+
+
+# upload file and do the rendering
+# in this case, the summary.txt is in the working dir. it can be anywhere with the path
+# meta file is optional
+
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("summary.txt")))
+r <- httr::POST(url_api, body = list(file = httr::upload_file("summary.txt"), meta = httr::upload_file("metainfo.txt")))
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_ID_summary.html")
+
+
+```
+
+
+
+
+
+
+# proteingroups.txt
+
+* proteinGroups_report.txt is a shorted and simplified version of proteinGroups.txt, much smaller in size, more suitable for report
+* proteinGroups_report.txt does not have the correct number of some items, e.g. the number of contaminant etc
+
+
+
+## local test
+
+### without meta
+
+```{r}
+data_table  <- read.delim("proteinGroups_report.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) # NOTE the read in options
+
+rmarkdown::render("MQ_report_proteinGroups.Rmd",output_format = "html_document", params = list(input_datatable =  data_table), output_file="report_proteinGroups_summary.html")
+
+```
+
+
+### with meta
+
+```{r}
+data_table  <- read.delim("proteinGroups.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) # NOTE the read in options
+meta_table <- read.delim("metainfo.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # with meta file
+
+
+rmarkdown::render("MQ_report_proteinGroups.Rmd",output_format = "html_document", params = list(input_datatable =  data_table, meta_table = meta_table), output_file="report_proteinGroups_summary.html")
+
+
+
+```
+
+
+
+
+
+##  remote test
+
+### without meta
+
+```{r}
+
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_proteinGroups_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+
+# upload file and do the rendering
+# in this case, the proteinGroups.txt is in the working dir. it can be anywhere with the path
+# variable r is the returning information from the curl function
+r <- httr::POST(url_api, body = list(file = httr::upload_file("proteinGroups_report.txt")))
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("proteinGroups1.txt"), meta = httr::upload_file("proteinGroups1_meta.txt")), httr::timeout(200000))
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+#paths
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_proteinGroups_summary.html")
+
+```
+
+
+### with meta
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_proteinGroups_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+
+# upload file and do the rendering
+# in this case, the proteinGroups.txt is in the working dir. it can be anywhere with the path
+# variable r is the returning information from the curl function
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("final_proteins.tsv")))
+r <- httr::POST(url_api, body = list(file = httr::upload_file("proteinGroups_report.txt"), meta = httr::upload_file("metainfo.txt")), httr::timeout(200000))
+
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+paths
+
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_proteinGroups_summary.html")
+
+
+```
+
+
+
+
+# peptide.txt test
+
+
+## locally
+
+
+### without meta
+
+```{r}
+
+# test on locoal drive, using local rmd
+data_table <- rio::import("./extdata/peptides_report.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+
+rmarkdown::render("./rmd/MQ_report_peptides.Rmd",output_format = "html_document", params = list(data_table =  data_table), output_dir = getwd())
+
+
+```
+
+
+
+
+### with meta
+
+```{r}
+
+data_table  <- rio::import("./extdata/peptides_report.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) # NOTE the readin options
+meta_table <- rio::import("./extdata/metainfo.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # with meta file
+
+rmarkdown::render("./rmd/MQ_report_peptides.Rmd",output_format = "html_document", params = list(data_table =  data_table, meta_table = meta_table), output_file="MQ_report_peptides.html",output_dir = getwd())
+
+
+```
+
+
+
+
+
+## remotely
+
+
+### without meta
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_peptides_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# variable r is the returning information from the curl function
+r <- httr::POST(url_api, body = list(file = httr::upload_file("peptides.txt")))
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("peptides3.txt"),meta = httr::upload_file("peptides3_meta.txt")), httr::timeout(200000))
+r$status_code
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+path_target
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_peptides_summary.html")
+
+
+```
+
+
+
+### with meta
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_peptides_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# in this case, the proteinGroups.txt is in the working dir. it can be anywhere with the path
+# variable r is the returning information from the curl function
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("peptides.txt")))
+r <- httr::POST(url_api, body = list(file = httr::upload_file("peptides.txt"),meta = httr::upload_file("metainfo.txt")), httr::timeout(200000))
+r$status_code
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+path_target
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_peptides_summary.html")
+
+
+```
+
+
+
+# BuiltIn.taxa.refine.csv ----
+
+## remotely
+
+### without meta
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_taxon_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# variable r is the returning information from the curl function
+r <- httr::POST(url_api, body = list(file = httr::upload_file("BuiltIn.taxa.refine.csv")))
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_taxonomy_summary.html")
+
+
+```
+
+
+### with meta
+
+```{r}
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_taxon_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# variable r is the returning information from the curl function
+
+r <- httr::POST(url_api, body = list(file = httr::upload_file("BuiltIn.taxa.refine.csv"),meta = httr::upload_file("metainfo.txt")), httr::timeout(200000))
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_taxonomy_summary.html")
+
+
+```
+
+
+
+
+# function.csv ----
+
+## remote ----
+
+### without meta
+
+```{r}
+
+
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_function_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# variable r is the returning information from the curl function
+r <- httr::POST(url_api, body = list(file = httr::upload_file("extdata/functions.csv")))
+
+r$status_code
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_function_summary.html")
+
+
+
+```
+
+
+
+### with meta
+
+```{r}
+
+
+url_api <- "http://206.12.91.148/ocpu/library/rmdocpu/R/render_function_file"
+
+# get the root url
+url_api_split <- strsplit(url_api, "/")[[1]]
+url_server<- paste0(url_api_split[1],"//", url_api_split[3],"/")
+
+# upload file and do the rendering
+# variable r is the returning information from the curl function
+#r <- httr::POST(url_api, body = list(file = httr::upload_file("functions.csv")))
+r <- httr::POST(url_api, body = list(file = httr::upload_file("functions.csv"), meta = httr::upload_file("metainfo.txt")))
+
+r$status_code
+
+# get all the paths of all files from the opencpu end, and locate the one, which is the report
+# this step needs to be done in the script enviroment
+
+paths <- strsplit(rawToChar(r$content), "\n")[[1]]
+path_target <- paths[grep("output.html",paths)]
+
+# save/download the report file to local storage
+# the file  "maxquant_result_summary.html" now is the report
+curl::curl_download(paste0(url_server, path_target), "report_function_summary.html")
+
+
+
+```
+
+
+## locally
+
+### without meta
+
+```{r}
+
+
+data_table <- read.delim("extdata/functions.csv", header = TRUE,sep= ",",check.names = TRUE, stringsAsFactors = FALSE)
+#data_table <- read.delim("extdata/functions_20211015.csv", header = TRUE,sep= ",",check.names = TRUE, stringsAsFactors = FALSE)
+# knit to all supported format (here we support pdf and html)
+
+data_table <- read.delim("extdata/functions_20211018.tsv", header = TRUE,sep= "\t",quote="", check.names = TRUE, stringsAsFactors = FALSE,)
+
+
+
+data_table <- rio::import("extdata/functions_20211018.tsv",check.names = TRUE)
+
+
+
+rmarkdown::render("rmd/ML_report_function.Rmd",output_format = "html_document", params = list(input_datatable =  data_table))
+
+
+
+```
+
+### with meta
+
+```{r}
+
+### with meta
+
+data_table <- read.delim("functions.csv", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE)
+meta_table <- read.delim("metainfo.txt", header = TRUE,check.names = FALSE, stringsAsFactors = FALSE) 
+
+rmarkdown::render("ML_report_function.Rmd",output_format = "html_document", params = list(input_datatable =  data_table, meta_table = meta_table ))
+
+
+```
+
+# pepFunk 
+
+## locally
+
+```{r}
+
+data_table  <- data_table <- read.delim("./extdata/peptides.txt", row.names = 1) # NOTE the readin options
+
+meta_table <- rio::import("./extdata/metainfo_pepfunk.txt", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE) # with meta file
+
+#meta_table <- read.delim("./extdata/metadata.csv", header=F, sep=",")
+
+
+rmarkdown::render("./rmd/ML_report_pepFunk.Rmd",output_format = "html_document", output_dir = getwd(), params = list(data_table =  data_table, meta_table = meta_table ))
+
+
+
+rmarkdown::render("./rmd/ML_report_pepFunk.Rmd",output_format = "html_document", output_dir = getwd(), envir = new.env(), params = list(data_table =  data_table, meta_table = meta_table ))
+
+
+
+# for debugging
+
+#params$data_table <- data_table
+#params$meta_table <- meta_table
+
+
+
+
+
+
+```
+
+
