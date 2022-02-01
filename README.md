@@ -2,26 +2,26 @@
 
 
 
-In this package, we use opencpu server to do the data analysis and generate report. These functions are all in R/rmdtext.R. They top wrappers of doing the one step analysis. 
+In this package, we use opencpu server to do the data analysis and generate report. These functions are all in R/rmdtext.R. They are top wrappers of doing one-step analysis. 
 
 The rmarkdown template files are all in \inst\rmd by default. 
-The rmarkdown template needs very often update (this pacakge is still under active development), therefore the we let the r wrapper function to read the rmarkdown files directly from github/gitlab.
-By doing this, the opencpu server do not need to update this package each time when there is a update of the rmarkdown template, otherwise if the wrapper function uses the rmarkdown files locally. 
+The rmarkdown template needs very often update (this pacakge is still under active development), therefore we let the r wrapper function read the rmarkdown files directly from github/gitlab.
+By doing this, the opencpu server do not need to update the package each time when there is a update of the rmarkdown template. 
 Once the pacakge is relative stabilized, the wrapper function will turn to using rmardown files locally. 
 
 How to setup?
-1--In order to use this function, user need to have an opencpu server setup first (check the opencpu website for the installation). You need to write down the api url, like http://ipv4-address/ocpu/library/rmdocpu/R/sub-function-name
-It would be better to have one or even more opencpu server as backup. 
+1--In order to use this function, users need to have an opencpu server setup first (check the opencpu website for the installation). You need to write down the api url, like http://ipv4-address/ocpu/library/rmdocpu/R/sub-function-name
+It would be better to have one or even more opencpu servers as backup. 
 
 2--Install this rmdocpu package from the github
 
+devtools::install_github("ningzhibin/rmdocpu")
+
+
 How to use?
 
-First choice is that you can use it in R, as demoed in the R_curl_ocpu_test_debug.R in the rmd folder
+First choice is using it in R, as demoed in the R_curl_ocpu_test_debug.R in the rmd folder
 Once you know the principle how to upload (post) your data table, and download the report file (curl), you will be able to adapt this in to java, python, javascripit in html. 
-
-
-
 
 
 ## Install opencpu first
@@ -40,7 +40,6 @@ Installs OpenCPU server
 `sudo apt-get install -y opencpu-server`
 
 Done! Open http://yourhost/ocpu in your browser
-
 
 
 ## System level preparation
